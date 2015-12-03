@@ -1,0 +1,153 @@
+/* //// THE FORCE AWAKENS //// */
+/* servo+led+lightsaber+sensor+random+MP3 */
+
+/* START OF MP3 Shield configuration MP3TF */
+
+#include <SPI.h>
+
+//Add the SdFat                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           	 Libraries
+#include <SdFat.h>
+#include <SdFatUtil.h> 
+
+//and the MP3 Shield Library
+#include <SFEMP3Shield.h>
+
+//create and name the library object
+SFEMP3Shield MP3player;
+SdFat sd;
+SdFile file;
+
+// Define variables that we might use but in this specific example are not needed. 
+// See https://github.com/mpflaga/Sparkfun-MP3-Player-Shield-Arduino-Library
+
+byte temp;
+byte result;
+
+/* END OF MP3 Shield configuration MP3TF */
+
+#include <Servo.h>
+#define trigPin 12
+#define echoPin 11
+#define led 13
+#define switchpin 3
+
+// Create servo Motor object
+Servo myservo;
+
+// Define random variable to determine if an individual has the force
+long randNumber;
+
+void setup() {
+ 
+  Serial.begin(9600);
+  pinMode(trigPin, OUTPUT);
+  pinMode(echoPin, INPUT);
+  pinMode(led, OUTPUT);
+  pinMode(switchpin, OUTPUT);
+  myservo.attach(4);
+
+  // if analog input pin 0 is unconnected, random analog
+  // noise will cause the call to randomSeed() to generate
+  // different seed numbers each time the sketch runs.
+  // randomSeed() will then shuffle the random function.
+  randomSeed(analogRead(0));
+
+  //mp3 shield powering in varibles initializing
+
+  sd.begin(SD_SEL, SPI_HALF_SPEED);
+  
+  //boot up the MP3 Player Shield
+  result = MP3player.begin();
+  
+  //check result, see readme for error codes.
+  if(result != 0) {
+    Serial.print("Error code: ");
+    Serial.print(result);
+    Serial.println(" when trying to start MP3 player");
+  }
+
+}
+
+void loop() {
+
+ 
+  Serial.println("Hello");
+  Serial.println("Preparing to play a song");
+
+  // print a random number from 0 to 99
+  randNumber = random(100);
+  Serial.println(randNumber);  
+  
+  long duration, distance,pos=0,i;
+  digitalWrite(trigPin, LOW); 
+  //delayMicroseconds(2);
+  digitalWrite(trigPin, HIGH);
+  //delayMicroseconds(10);
+  digitalWrite(trigPin, LOW);
+  duration = pulseIn(echoPin, HIGH);
+  distance = (duration/2) / 29.1;
+   
+   Serial.print(distance);
+   Serial.println(" cm");
+   
+   
+   //It is assumed that only 5% has the force
+    if(randNumber>95){
+    
+      //the person has to be within the sensors range and closer than 50 cm to the installation
+      if (distance <= 60) {
+        Serial.println("The force be with you.");
+        Serial.print(distance);
+        Serial.println(" cm");
+        
+        //add track for person with the force
+        char trackName[] = "track001.mp3";
+
+        //tell the MP3 Shield to play that file
+        result = MP3player.playMP3(trackName);
+              
+        //check result, see readme for error codes.
+        if(result != 0) {
+          Serial.print("Error code: ");
+          Serial.print(result);
+          Serial.println(" when trying to play track");
+        }
+            
+        // checking LED to verify the interaction is as expected    
+        digitalWrite(led, HIGH);
+        
+        //darth vader turns to look at you if you have the force
+        digitalWrite(switchpin,HIGH);
+        myservo.write(180);
+        
+        // wait 15 seconds
+        delay(15000);
+        
+        // turn the servo and LED off
+        digitalWrite(led,LOW);
+        digitalWrite(switchpin,LOW);
+        myservo.write(0);
+        
+        
+      }
+      else {
+         Serial.println("Out of range");
+      }
+    }else{
+        Serial.println("I find your lack of faith disturbing.");
+        
+        // add track to person without the force
+        char trackName[] = "track002.mp3";
+        result = MP3player.playMP3(trackName);
+  
+        //check result, see readme for error codes.
+        if(result != 0) {
+          Serial.print("Error code: ");
+          Serial.print(result);
+          Serial.println(" when trying to play track");
+        }
+        // interaction with person without the force should last 3 sec
+        
+        delay(3000);
+    }
+}
