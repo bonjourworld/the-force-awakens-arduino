@@ -1,4 +1,21 @@
 /* //// THE FORCE AWAKENS //// */
+
+/* // MAIN COMPONENTS // */
+
+// Lightsaber toy or led set (x1)
+// ARDUINO UNO (x1)
+// VS1053b MP3 Shield for ARDUINO (x1)
+// Micro Servo motor SG90 or compatible with wiring (x1)
+// HC - SR04 Ultrasonic Distance Measuring Sensor Module for Arduino  (x1)
+// SD card (x1) 
+// externally powered speakers (x2) [avoid powering from the Arduino, this might cause malfunction of MP3 Shield]. 
+// regular LED (x1)
+// ARDUINO jumper cables and alligator cables (>20+)
+// USB cable (x1)
+// PC/MAC (x1)
+
+/* /// For configuration please see wire diagram and inside-lighsaber pictures. Thank you /// */
+
 /* servo+led+lightsaber+sensor+random+MP3 */
 
 /* START OF MP3 Shield configuration MP3TF */
